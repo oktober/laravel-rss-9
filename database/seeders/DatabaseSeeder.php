@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Feed;
+use App\Models\Entry;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,5 +22,16 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+
+        // $feed = factory(App\Feed::class)->create();
+        $feed = Feed::factory()->create();
+
+        // factory(App\Entry::class, 3)->create([
+        //     'feed_id' => $feed->id
+        // ]);
+        Entry::factory(3)->create([
+            'feed_id' => $feed->id
+        ]);
     }
 }

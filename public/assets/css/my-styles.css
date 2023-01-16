@@ -1,0 +1,12 @@
+.control {
+	margin-top: 1.5rem;
+}
+
+header h1 + p {
+	font-size: inherit;
+}
+
+.cancel, .submit {
+	/* Added to fix font-size issue with these 2 elements */
+	font-size:  11pt;
+}
