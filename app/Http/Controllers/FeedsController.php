@@ -28,31 +28,34 @@ class FeedsController extends Controller
     	$this->validateFeed();
         $siteURL = request('site_url');
         
-        //Remove ending slash in URL if there
+        // Remove ending slash in URL if there
         if (Str::endsWith($siteURL, '/')) {
             $siteURL = Str::replaceLast('/', '', $siteURL);
         }
 
-        //Check if RSS feed is at {$siteURL}/feed
+        // Check if RSS feed is at {$siteURL}/feed
         $feedURL = $siteURL . '/feed';
         $feedResponse = HTTP::get($feedURL);
 
         //If we were able to find an RSS feed file
         if ($feedResponse->ok()) {
 
+            // TODO: What are the security ramifications here?
+                // And how can we mitigate them?
+
             $feedXML = str_replace(':encoded', '', file_get_contents($feedURL)); //Get the file as a string and remove ':encoded' from XML elements so it formats properly
             $xmlObject = simplexml_load_string($feedXML, 'SimpleXMLElement', LIBXML_NOCDATA); //Load it as an XML object without CDATA
             $feedJson = json_encode($xmlObject); //Turn it into a JSON object
             $feedCollection = collect(json_decode($feedJson, true)); //Turn it into an array, then into a collection
 
-            //Insert the feed details
+            // Insert the feed details
             $createdFeed = Feed::create([
                 'feed_url' => $siteURL . '/feed',
                 'site_url' => $siteURL,
                 'site_title' => request('site_title')
             ]);
 
-            //Looking for posts/entries in different types of files
+            // Looking for posts/entries in different types of files
             if (isset($feedCollection['entry'])) { //Found a post in atom+xml
 
                 //Insert the entries
@@ -72,9 +75,9 @@ class FeedsController extends Controller
                 }
             } elseif (isset($feedCollection['channel']['item'])) { //Found a post in rss+xml
 
-                //Insert the entries
+                // Insert the entries
                 foreach($feedCollection['channel']['item'] as $post) {
-                    //dd($post);
+
                     // Use Carbon to magically fix weirdly formatted dates
                     $updated = new Carbon($post['pubDate']);
 
@@ -97,7 +100,7 @@ class FeedsController extends Controller
 
             }
 
-            //Redirect them to the feed page once entered
+            // Redirect them to the feed page once entered
             return redirect(route('feeds.show', $createdFeed->id));
 
         } else {
@@ -114,7 +117,7 @@ class FeedsController extends Controller
     }
 
     public function edit(Feed $feed){
-    	//Show a view to edit a feed
+    	// Show a view to edit a feed
 
     	return view('feeds.edit', ['feed' => $feed]);
     }
@@ -132,19 +135,18 @@ class FeedsController extends Controller
     		'last_updated' => $currentTime->format('Y-m-d H:i:s')
     	]);
 
-        //Get XML file from feed_url
+        // Get XML file from feed_url
         //walk through it and use the feeds to update the entries table
             //if entry doesn't exist 
                 //insert into entries
             //OR updated date it after current updated date
                 //update the entry
 
-    	//Redirect them to the feed page once entered
+    	// Redirect them to the feed page once entered
     	return redirect(route('feeds.show', $feed));
     }
 
     public function destroy(Feed $feed){
-        // TODO: won't work yet. Need to delete all entries first, then delete feed
     	$feed->delete();
     	
     	return redirect('/')->with('success', 'Feed has been successfully deleted');

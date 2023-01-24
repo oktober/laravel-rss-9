@@ -15,8 +15,7 @@ return new class extends Migration
     {
         Schema::create('entries', function (Blueprint $table) {
             $table->id();
-            //for this foreign key, decide if want to do cascade on update or delete
-            $table->foreignId('feed_id')->constrained('feeds');
+            $table->foreignId('feed_id')->constrained()->cascadeOnDelete();
             $table->string('entry_url')->unique();
             $table->string('entry_title');
             $table->text('entry_teaser');
