@@ -16,20 +16,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
-
-        // $feed = factory(App\Feed::class)->create();
+        // create one feed with 3 entries
         $feed = Feed::factory()->create();
-
-        // factory(App\Entry::class, 3)->create([
-        //     'feed_id' => $feed->id
-        // ]);
         Entry::factory(3)->create([
             'feed_id' => $feed->id
         ]);
