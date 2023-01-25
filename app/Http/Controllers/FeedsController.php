@@ -227,7 +227,6 @@ class FeedsController extends Controller
         // TODO: Shouldn't the validation be in the model?
         // And this function should probably just go inline under store()
     	return request()->validate([
-    		'site_title' => 'required',
     		'site_url' => 'required|active_url',
     	]);
     }

@@ -8,21 +8,6 @@
 
             <form method="POST" action="/feeds">
                 @csrf
-                
-                <div class="field">
-                    <label class="label" for="site_title">Site Title</label>
-                        <div class="control">
-                            <input 
-                            class="input" 
-                            type="text" 
-                            name="site_title" 
-                            id="site_title"
-                            value="{{ old('site_title') }}">
-                            @error('site_title')
-                                <p class="help is-danger">{{ $errors->first('site_title') }}</p>
-                            @enderror
-                        </div>
-                </div>
 
                 <div class="field">
                     <label class="label" for="site_url">Site URL</label>
