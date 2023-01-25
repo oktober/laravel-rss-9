@@ -18,96 +18,167 @@ class FeedsController extends Controller
     }
 
     public function create(){
-    	//Shows a view to create a new feed
-
     	return view('feeds.create');
     }
 
     public function store(){
         // Validate the input fields
     	$this->validateFeed();
-        $siteURL = request('site_url');
+        $siteURL = trim(request('site_url'));
         
         // Remove ending slash in URL if there
         if (Str::endsWith($siteURL, '/')) {
             $siteURL = Str::replaceLast('/', '', $siteURL);
         }
 
-        // Check if RSS feed is at {$siteURL}/feed
-        $feedURL = $siteURL . '/feed';
-        $feedResponse = HTTP::get($feedURL);
+        // Check if RSS feed can be found at any of these paths
+        // TODO: Could also be feed.siteURL?
+        $pathOptions = [
+            'feed',
+            'rss.xml',
+            'atom.xml'
+        ];
+        $feedURL = '';
+        $feedFound = false;
+
+        foreach ($pathOptions as $path) {
+            $feedResponse = HTTP::get($siteURL . '/' . $path);
+
+            if ($feedResponse->ok()) {
+                $feedURL = $siteURL . '/' . $path;
+                $feedFound = true;
+                break;
+            }
+        }
 
         //If we were able to find an RSS feed file
-        if ($feedResponse->ok()) {
+        if ($feedFound) {
+            $rawXML = $feedResponse->body();
 
             // TODO: What are the security ramifications here?
-                // And how can we mitigate them?
+            //     And how can we mitigate them?
+            $xmlObject = simplexml_load_string($rawXML);
 
-            $feedXML = str_replace(':encoded', '', file_get_contents($feedURL)); //Get the file as a string and remove ':encoded' from XML elements so it formats properly
-            $xmlObject = simplexml_load_string($feedXML, 'SimpleXMLElement', LIBXML_NOCDATA); //Load it as an XML object without CDATA
-            $feedJson = json_encode($xmlObject); //Turn it into a JSON object
-            $feedCollection = collect(json_decode($feedJson, true)); //Turn it into an array, then into a collection
+            $typeOfXML = $xmlObject->getName();
 
-            // Insert the feed details
-            $createdFeed = Feed::create([
-                'feed_url' => $siteURL . '/feed',
-                'site_url' => $siteURL,
-                'site_title' => request('site_title')
-            ]);
+            if ('rss' === $typeOfXML) {
+                $xmlNamespaces = $xmlObject->getDocNamespaces();
+                $hasNamespace = isset($xmlNamespaces) && !empty($xmlNamespaces);
 
-            // Looking for posts/entries in different types of files
-            if (isset($feedCollection['entry'])) { //Found a post in atom+xml
+                $siteTitle = (string) $xmlObject->channel->title;
 
-                //Insert the entries
-                foreach($feedCollection['entry'] as $post) {
+                // Insert the feed details
+                $createdFeed = Feed::create([
+                    'feed_url' => $feedURL,
+                    'site_url' => $siteURL,
+                    'site_title' => $siteTitle
+                ]);
+
+                //Insert the entries for that feed
+                foreach($xmlObject->channel->item as $entry) {
+
+                    // For the description, 
+                        // turn it into a string and trim/replace extraneous whitespace
+                    $xmlDescription = (string) $entry->description;
+                    $descriptionTrimmed = str_replace("  ", "", trim($xmlDescription));
+                    // Remove all HTML tags
+                    $descriptionStripped = strip_tags($descriptionTrimmed);
+                    // Only put the first 500 characters in the teaser and add ellipses
+                    $entryTeaser = (!empty($descriptionStripped)) ? substr($descriptionStripped, 0, 500) . '...' : '';
+
+                    // We have to check that the namespace exists before in order to run the xpath to get the value
+                    if ($hasNamespace && isset($xmlNamespaces['content'])) {
+                        // for the content, 
+                            // turn it into a string, trim/replace extraneous whitespace
+
+                        // Every rss feed so far has either <content:encoded> or just <description>
+                        $xmlContent = (string) $entry->xpath('content:encoded')[0];
+                        $contentStripped = str_replace("  ", "", trim($xmlContent));
+
+                        $entryContent = $contentStripped;
+                    } else {
+                        $entryContent = $descriptionTrimmed;
+                    }
+
                     // Use Carbon to magically fix weirdly formatted dates
-                    $updated = new Carbon($post['updated']);
+                    $updated = new Carbon($entry->pubDate);
 
+
+                    // Insert the post/entry details
                     Entry::create([
                         'feed_id' => $createdFeed->id,
-                        'entry_url' => $post['id'],
-                        'entry_title' => $post['title'],
-                        'entry_teaser' => $post['summary'],
-                        'entry_content' => $post['content'],
+                        // TODO: Validate that this is a valid URL
+                        'entry_url' => (string) $entry->link,
+                        'entry_title' => (string) $entry->title,
+                        'entry_teaser' => $entryTeaser,
+                        'entry_content' => $entryContent,
                         'entry_last_updated' => $updated,
                     ]);
 
                 }
-            } elseif (isset($feedCollection['channel']['item'])) { //Found a post in rss+xml
+            } else if ('feed' === $typeOfXML) { // atom type of XML
 
-                // Insert the entries
-                foreach($feedCollection['channel']['item'] as $post) {
+                // had to set a namespace for xpath to work on this XML
+                $xmlObject->registerXPathNamespace("n", "http://www.w3.org/2005/Atom");
+
+                // grab the feed_url and site_title from the feed itself
+                $siteTitle = (string) $xmlObject->title;
+
+                // Insert the feed details
+                $createdFeed = Feed::create([
+                    'feed_url' => $feedURL,
+                    'site_url' => $siteURL,
+                    'site_title' => $siteTitle
+                ]);
+
+                //Insert the entries for that feed
+                foreach($xmlObject->entry as $entry) {
+
+                    // for the description, 
+                        // turn it into a string and trim/replace extraneous whitespace
+                    $xmlDescription = (string) $entry->summary;
+                    $descriptionTrimmed = str_replace("  ", "", trim($xmlDescription));
+                    // Remove all HTML tags
+                    $descriptionStripped = strip_tags($xmlDescription);
+                    // Only put the first 500 characters in the teaser and add ellipses
+                    $entryTeaser = (!empty($descriptionStripped)) ? substr($descriptionStripped, 0, 500) . '...' : '';
+
+                    if (isset($entry->content)) {
+                        // for the content, 
+                            // turn it into a string, trim/replace extraneous whitespace
+                        $xmlContent = (string) $entry->content;
+                        $contentStripped = str_replace("  ", "", trim($xmlContent));
+
+                        $entryContent = $contentStripped;
+                    } else {
+                        $entryContent = $descriptionTrimmed;
+                    }
 
                     // Use Carbon to magically fix weirdly formatted dates
-                    $updated = new Carbon($post['pubDate']);
+                    $updated = new Carbon($entry->updated);
 
+                    // Insert the post/entry details
                     Entry::create([
                         'feed_id' => $createdFeed->id,
-                        'entry_url' => $post['link'],
-                        'entry_title' => $post['title'],
-                        'entry_teaser' => $post['description'],
-                        'entry_content' => $post['content'],
+                        // TODO: Validate that this is a valid URL
+                        'entry_url' => (string) $entry->link->attributes()['href'],
+                        'entry_title' => (string) $entry->title,
+                        'entry_teaser' => $entryTeaser,
+                        'entry_content' => $entryContent,
                         'entry_last_updated' => $updated,
                     ]);
-
                 }
-
             } else {
-
-                // If feed not available, return to previous page and display error
-                //return back()->withError('We\'re not able to find an RSS feed for this site')->withInput();
-                dd('Not finding any posts');
-
+                // Can't find a feed, return to previous page and display error
+                return back()->withError('We\'re not able to find an RSS feed for this site')->withInput();
             }
 
-            // Redirect them to the feed page once entered
+            // Redirect them to the newly created feed page
             return redirect(route('feeds.show', $createdFeed->id));
 
         } else {
-
-            // If feed not available, return to previous page and display error
+            // Can't find a feed, return to previous page and display error
             return back()->withError('We\'re not able to find an RSS feed for this site')->withInput();
-
         }
     }
 
