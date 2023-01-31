@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Http;
 
 class Feed 
 {
-    protected $feedURL;
-    protected $siteURL;
-    protected $rawXML;
+    protected string $feedURL;
+    protected string $siteURL;
+    protected string $rawXML;
     protected $xmlObject;
 
-    public function find($siteURL): bool
+    public function find(string $siteURL): bool
     {
         // Remove any erroneous whitespace and trailing slash
         $this->siteURL = rtrim(trim($siteURL), '/');
@@ -41,7 +41,7 @@ class Feed
         return $feedFound;
     }
 
-    public function getXMLType()
+    public function getXMLType(): string
     {
         // TODO: What are the security ramifications here?
         //     And how can we mitigate them?
@@ -51,7 +51,7 @@ class Feed
         return $this->xmlObject->getName();
     }
 
-    public function feedDetails($typeOfXML): array
+    public function feedDetails(string $typeOfXML): array
     {
         if ('rss' === $typeOfXML) {
             return [
@@ -75,7 +75,7 @@ class Feed
         }
     }
 
-    public function entryDetails($typeOfXML): array
+    public function entryDetails(string $typeOfXML): array
     {
         $entryDetails = [];
 
@@ -152,7 +152,7 @@ class Feed
         return $entryDetails;
     }
 
-    protected function removeWhitespace($string)
+    protected function removeWhitespace(string $string): string
     {
         return str_replace("  ", "", trim($string));
     }
