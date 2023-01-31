@@ -12,7 +12,7 @@ class Feed
     protected $rawXML;
     protected $xmlObject;
 
-    public function find($siteURL)
+    public function find($siteURL): bool
     {
         // Remove any erroneous whitespace and trailing slash
         $this->siteURL = rtrim(trim($siteURL), '/');
@@ -51,13 +51,6 @@ class Feed
         return $this->xmlObject->getName();
     }
 
-    public function hasNamespace(): bool
-    {
-        $xmlNamespaces = $this->xmlObject->getDocNamespaces();
-
-        return isset($xmlNamespaces) && !empty($xmlNamespaces);
-    }
-
     public function feedDetails($typeOfXML): array
     {
         if ('rss' === $typeOfXML) {
@@ -88,6 +81,8 @@ class Feed
 
         if ('rss' === $typeOfXML) {
 
+            $hasNamespace = $this->xmlObject->getDocNamespaces();
+
             foreach($this->xmlObject->channel->item as $entry) {
                 // For the description, 
                     // turn it into a string and trim/replace extraneous whitespace
@@ -99,7 +94,7 @@ class Feed
                 $entryTeaser = (!empty($descriptionStripped)) ? substr($descriptionStripped, 0, 500) . '...' : '';
 
                 // We have to check that the namespace exists in order to run the xpath to get the value
-                if ($this->hasNamespace() && isset($this->xmlObject->getDocNamespaces()['content'])) {
+                if ($hasNamespace && isset($this->xmlObject->getDocNamespaces()['content'])) {
 
                     // Every rss feed so far has either <content:encoded> or just <description>
                     $xmlContent = (string) $entry->xpath('content:encoded')[0];
