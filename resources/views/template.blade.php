@@ -27,8 +27,9 @@
 	<!-- Menu -->
 	    <nav id="menu">
 	        <ul class="links">
-	            <li><a href="index.html">Home</a></li>
+	            <li><a href="/">Home</a></li>
 	            <li><a href="/feeds/create">Add New Feed</a></li>
+	            <li><a href="/feeds/">Feeds</a></li>
 	        </ul>
 	    </nav>
 
