@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Feed;
 use App\Models\Entry;
-use App\Services\Feed as ServicesFeed;
+use App\Services\Feed as FeedService;
 
 class FeedsController extends Controller
 {
@@ -25,7 +25,7 @@ class FeedsController extends Controller
         // Validate the input fields
     	$this->validateFeed();
 
-        $feed = new ServicesFeed;
+        $feed = new FeedService;
         $feedFound = $feed->find(request('site_url'));
 
         // If we were able to find an RSS feed file
