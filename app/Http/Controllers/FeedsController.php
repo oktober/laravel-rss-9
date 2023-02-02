@@ -48,16 +48,14 @@ class FeedsController extends Controller
                 }
             
             } else {
-                // Can't find a feed, return to previous page and display error
-                return back()->withError('We\'re not able to find an RSS feed for this site')->withInput();
+                return $this->notFound();
             }
 
             // Redirect them to the newly created feed page
             return redirect(route('feeds.show', $createdFeed->id));
 
         } else {
-            // Can't find a feed, return to previous page and display error
-            return back()->withError('We\'re not able to find an RSS feed for this site')->withInput();
+            return $this->notFound();
         }
     }
 
@@ -110,5 +108,11 @@ class FeedsController extends Controller
     	return request()->validate([
     		'site_url' => 'required|active_url',
     	]);
+    }
+
+    protected function notFound()
+    {
+        // Can't find a feed, return to previous page and display error
+        return back()->withError('We\'re not able to find an RSS feed for this site')->withInput();
     }
 }
