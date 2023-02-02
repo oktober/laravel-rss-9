@@ -16,7 +16,6 @@ class EntriesController extends Controller
     }*/
 
     public function show(Entry $entry){
-    	//$entry = Entry::findOrFail($id);
     	return view('entries.show', ['entry' => $entry]);
     }
 }
