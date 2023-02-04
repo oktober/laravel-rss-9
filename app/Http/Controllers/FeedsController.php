@@ -71,24 +71,16 @@ class FeedsController extends Controller
 
     public function update(Feed $feed)
     {
-    	$this->validateFeed();
+        request()->validate([
+    		'site_title' => 'required',
+    	]);
 
     	$currentTime = new \DateTime();
 
     	$feed->update([
-            // Only need this line if we're allowing them to update the feed/XML URL
-    		// 'feed_url' => request('feed_url'),
-    		'site_url' => request('site_url'),
     		'site_title' => request('site_title'),
     		'last_updated' => $currentTime->format('Y-m-d H:i:s')
     	]);
-
-        // TODO: Get XML file from feed_url
-        //walk through it and use the feeds to update the entries table
-            //if entry doesn't exist 
-                //insert into entries
-            //OR updated date it after current updated date
-                //update the entry
 
     	// Redirect them to the feed page once entered
     	return redirect(route('feeds.show', $feed));
