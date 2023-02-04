@@ -23,7 +23,9 @@ class FeedsController extends Controller
     public function store()
     {
         // Validate the input fields
-    	$this->validateFeed();
+    	request()->validate([
+    		'site_url' => 'required|active_url',
+    	]);
 
         $feed = new FeedService;
         $feedFound = $feed->find(request('site_url'));
@@ -91,15 +93,6 @@ class FeedsController extends Controller
     	$feed->delete();
     	
     	return redirect('/')->with('success', 'Feed has been successfully deleted');
-    }
-
-    protected function validateFeed()
-    {
-        // TODO: Shouldn't the validation be in the model?
-        // And this function should probably just go inline under store()
-    	return request()->validate([
-    		'site_url' => 'required|active_url',
-    	]);
     }
 
     protected function notFound()
