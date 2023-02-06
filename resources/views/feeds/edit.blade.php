@@ -30,10 +30,10 @@
 
 
 
-            <form method="POST" action="/feeds/{{ $feed->id }}">
+            <form method="POST" action="/feeds/{{ $feed->id }}" id="delete-form">
                 @csrf
                 @method('DELETE')
-                <button class="button">Delete This Feed</button>
+                <button class="button" id="delete-button">Delete This Feed</button>
             </form>
         </div>
     </div>

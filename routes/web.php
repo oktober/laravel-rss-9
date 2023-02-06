@@ -25,7 +25,7 @@ Route::controller(FeedsController::class)->group(function () {
     Route::get('/feeds/create', 'create');
     Route::post('/feeds', 'store');
     Route::get('/feeds/{feed}', 'show')->name('feeds.show');
-    Route::get('/feeds/{feed}/edit', 'edit');
+    Route::get('/feeds/{feed}/edit', 'edit')->name('feeds.edit');
     Route::put('/feeds/{feed}', 'update');
     Route::delete('/feeds/{feed}', 'destroy');
 });

@@ -11,6 +11,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="/assets/css/main.css" />
 		<link rel="stylesheet" href="/assets/css/my-styles.css" />
+
+		@if (Route::is('feeds.edit'))
+			<script src="/assets/js/modal.js"></script>
+		@endif
 	</head>
 	<body>
 	<!-- Header -->
