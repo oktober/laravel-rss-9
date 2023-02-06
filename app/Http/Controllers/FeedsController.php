@@ -81,7 +81,7 @@ class FeedsController extends Controller
 
     	$feed->update([
     		'site_title' => request('site_title'),
-    		'last_updated' => $currentTime->format('Y-m-d H:i:s')
+    		'updated_at' => $currentTime->format('Y-m-d H:i:s')
     	]);
 
     	// Redirect them to the feed page once entered

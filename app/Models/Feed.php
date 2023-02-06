@@ -12,8 +12,7 @@ class Feed extends Model
 	protected $fillable = [
 		'feed_url', 
 		'site_url', 
-		'site_title', 
-		'updated_at'
+		'site_title'
 	];
 
     public function entries(){
