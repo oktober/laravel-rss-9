@@ -63,4 +63,23 @@ class AddFeedsTest extends TestCase
             $this->assertNull($feedId);
         }
     }
+
+    public function test_a_duplicate_feed_does_not_get_added()
+    {
+        $url = 'https://staciefarmer.com';
+
+        // add this feed to the database 
+        $this->post('/feeds/', ['site_url' => $url]);
+
+        // validate the database has a feed with this URL 
+        $this->assertDatabaseHas('feeds', ['site_url' => $url]);
+
+        // store the feed 
+        $this->post('/feeds/', ['site_url' => $url])
+            ->assertRedirectContains('/feeds/create')
+            ->assertSessionHas([
+                'error' =>'This feed already exists'
+            ]);
+        
+    }
 }

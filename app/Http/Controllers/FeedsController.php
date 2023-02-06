@@ -27,37 +27,46 @@ class FeedsController extends Controller
     		'site_url' => 'required|active_url',
     	]);
 
-        $feed = new FeedService;
-        $feedFound = $feed->find(request('site_url'));
+        // Check if this site already exists in the db 
+        $feedExists = Feed::where('site_url', request('site_url'))->first();
 
-        // If we were able to find an RSS feed file
-        if ($feedFound) {
-            $typeOfXML = $feed->getXMLType();
-            $feedDetails = $feed->feedDetails($typeOfXML);
+        if (! $feedExists) {
 
-            if (count($feedDetails) > 0) {
+            $feed = new FeedService;
+            $feedFound = $feed->find(request('site_url'));
 
-                // Insert the feed details
-                $createdFeed = Feed::create($feedDetails);
+            // If we were able to find an RSS feed file
+            if ($feedFound) {
+                $typeOfXML = $feed->getXMLType();
+                $feedDetails = $feed->feedDetails($typeOfXML);
 
-                $allEntries = $feed->entryDetails($typeOfXML);
+                if (count($feedDetails) > 0) {
 
-                foreach ($allEntries as $entry) {
-                    // Add the feed_id to the beginning of each array
-                    $entryDetails = array_merge(['feed_id' => $createdFeed->id], $entry);
-                    // Insert the entry details
-                    Entry::create($entryDetails);
+                    // Insert the feed details
+                    $createdFeed = Feed::create($feedDetails);
+
+                    $allEntries = $feed->entryDetails($typeOfXML);
+
+                    foreach ($allEntries as $entry) {
+                        // Add the feed_id to the beginning of each array
+                        $entryDetails = array_merge(['feed_id' => $createdFeed->id], $entry);
+                        // Insert the entry details
+                        Entry::create($entryDetails);
+                    }
+                
+                } else {
+                    return $this->notFound();
                 }
-            
+
+                // Redirect them to the newly created feed page
+                return redirect(route('feeds.show', $createdFeed->id));
+
             } else {
                 return $this->notFound();
             }
-
-            // Redirect them to the newly created feed page
-            return redirect(route('feeds.show', $createdFeed->id));
-
         } else {
-            return $this->notFound();
+            // This feed already exists, return to the create form and display error
+            return redirect('/feeds/create')->withError('This feed already exists')->withInput();
         }
     }
 
