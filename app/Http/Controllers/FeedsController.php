@@ -55,18 +55,17 @@ class FeedsController extends Controller
                     }
                 
                 } else {
-                    return $this->notFound();
+                    return $this->backWithError("We're not able to find an RSS feed for this site");
                 }
 
                 // Redirect them to the newly created feed page
                 return redirect(route('feeds.show', $createdFeed->id));
 
             } else {
-                return $this->notFound();
+                return $this->backWithError("We're not able to find an RSS feed for this site");
             }
         } else {
-            // This feed already exists, return to the create form and display error
-            return redirect('/feeds/create')->withError('This feed already exists')->withInput();
+            return $this->backWithError('This feed already exists');
         }
     }
 
@@ -104,9 +103,9 @@ class FeedsController extends Controller
     	return redirect('/')->with('success', 'Feed has been successfully deleted');
     }
 
-    protected function notFound()
+    protected function backWithError(string $error)
     {
         // Can't find a feed, return to previous page and display error
-        return back()->withError('We\'re not able to find an RSS feed for this site')->withInput();
+        return redirect('/feeds/create')->withError($error)->withInput();
     }
 }
