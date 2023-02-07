@@ -15,7 +15,7 @@
             <h1>Blog Feed</h1>
         </div>
 
-        @foreach ($feeds as $feed)
+        @forelse ($feeds as $feed)
         <div class="inner">
             <h2><a href="{{ route('feeds.show', $feed) }}">{{ $feed->site_title }}</a></h2>
         </div>
@@ -33,7 +33,16 @@
                 </div>
             @endforeach
         </div>
-        @endforeach
+
+        @empty
+        <div class="inner">
+            <h2>No feeds available</h2>
+            <p>
+                <a href="{{ route('feeds.create') }}">Enter a new feed</a>
+            </p>
+        </div>
+
+        @endforelse
 
     </section>
 @endsection

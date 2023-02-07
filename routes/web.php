@@ -22,7 +22,7 @@ Route::get('/', [HomeController::class, 'index']);
 // Create a group for all the Feeds controllers
 Route::controller(FeedsController::class)->group(function () {
     Route::get('/feeds', 'index');
-    Route::get('/feeds/create', 'create');
+    Route::get('/feeds/create', 'create')->name('feeds.create');
     Route::post('/feeds', 'store');
     Route::get('/feeds/{feed}', 'show')->name('feeds.show');
     Route::get('/feeds/{feed}/edit', 'edit')->name('feeds.edit');
