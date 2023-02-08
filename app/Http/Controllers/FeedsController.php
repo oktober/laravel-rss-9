@@ -85,11 +85,8 @@ class FeedsController extends Controller
     		'site_title' => 'required',
     	]);
 
-    	$currentTime = new \DateTime();
-
     	$feed->update([
-    		'site_title' => request('site_title'),
-    		'updated_at' => $currentTime->format('Y-m-d H:i:s')
+    		'site_title' => request('site_title')
     	]);
 
     	// Redirect them to the feed page once entered
