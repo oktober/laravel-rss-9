@@ -60,10 +60,6 @@ class Feed
                 'site_title' => (string) $this->xmlObject->channel->title
             ];
         } else if ('feed' === $typeOfXML) {
-
-            // had to set a namespace for xpath to work on this XML
-            $this->xmlObject->registerXPathNamespace("n", "http://www.w3.org/2005/Atom");
-
             return [
                 'feed_url' => $this->feedURL,
                 'site_url' => $this->siteURL,
