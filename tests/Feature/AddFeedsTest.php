@@ -15,9 +15,9 @@ class AddFeedsTest extends TestCase
     {
         // all these sites should work, but they have different types of XML feeds
         $validSites = [
-            'https://staciefarmer.com', // located @ /feed and uses atom
-            'https://laravel-news.com', // located @ /feed and uses rss
-            'https://xkcd.com', // located @ /rss.xml or /atom.xml
+            'https://staciefarmer.com/', // located @ /feed and uses atom
+            'https://laravel-news.com/', // located @ /feed and uses rss
+            'https://xkcd.com/', // located @ /rss.xml or /atom.xml
             // find & test a site that uses URL/atom.xml only
         ];
 
@@ -66,7 +66,7 @@ class AddFeedsTest extends TestCase
 
     public function test_a_duplicate_feed_does_not_get_added()
     {
-        $url = 'https://staciefarmer.com';
+        $url = 'https://staciefarmer.com/';
 
         // add this feed to the database 
         $this->post('/feeds/', ['site_url' => $url]);

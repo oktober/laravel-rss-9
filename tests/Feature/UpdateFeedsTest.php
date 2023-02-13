@@ -12,7 +12,7 @@ class UpdateFeedsTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected $feedId;
-    protected $url = 'https://staciefarmer.com';
+    protected $url = 'https://staciefarmer.com/';
 
     protected function setUp(): void
     {
