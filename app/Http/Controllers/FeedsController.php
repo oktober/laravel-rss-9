@@ -37,16 +37,15 @@ class FeedsController extends Controller
 
             // If we were able to find an RSS feed file
             if ($feedFound) {
-                $typeOfXML = $feed->getXMLType();
-                $feedDetails = $feed->feedDetails($typeOfXML);
+                
+                $feedDetails = $feed->feedDetails();
 
                 if (count($feedDetails) > 0) {
 
                     // Insert the feed details
                     $createdFeed = Feed::create($feedDetails);
 
-                    $allEntries = $feed->entryDetails($typeOfXML);
-
+                    $allEntries = $feed->entryDetails();
                     foreach ($allEntries as $entry) {
                         // Add the feed_id to the beginning of each array
                         $entryDetails = array_merge(['feed_id' => $createdFeed->id], $entry);
