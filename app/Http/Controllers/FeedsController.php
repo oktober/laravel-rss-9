@@ -35,9 +35,9 @@ class FeedsController extends Controller
             $feed = new FeedService;
             $feedFound = $feed->find(request('site_url'));
 
-            // If we were able to find an RSS feed file
+            // If we were able to find a feed for this site
             if ($feedFound) {
-                
+
                 $feedDetails = $feed->feedDetails();
 
                 if (count($feedDetails) > 0) {
