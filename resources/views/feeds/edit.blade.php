@@ -23,7 +23,7 @@
                 <div class="field is-grouped">
                     <div class="control">
                         <button class="button is-link submit" type="submit">Submit</button>
-                        <a href="/" class="button is-link cancel">Cancel</a>
+                        <a href="/feeds/{{ $feed->id }}" class="button is-link cancel">Cancel</a>
                     </div>
                 </div>
             </form>
