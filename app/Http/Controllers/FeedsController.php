@@ -27,44 +27,36 @@ class FeedsController extends Controller
     		'site_url' => 'required|active_url',
     	]);
 
-        // Check if this site already exists in the db 
-        $feedExists = Feed::where('site_url', request('site_url'))->first();
+        $feed = new FeedService;
+        $feedFound = $feed->find(request('site_url'));
 
-        if (! $feedExists) {
+        // If we were able to find a feed for this site
+        if ($feedFound) {
 
-            $feed = new FeedService;
-            $feedFound = $feed->find(request('site_url'));
-
-            // If we were able to find a feed for this site
-            if ($feedFound) {
-
-                $feedDetails = $feed->feedDetails();
-
-                if (count($feedDetails) > 0) {
-
-                    // Insert the feed details
-                    $createdFeed = Feed::create($feedDetails);
-
-                    $allEntries = $feed->entryDetails();
-                    foreach ($allEntries as $entry) {
-                        // Add the feed_id to the beginning of each array
-                        $entryDetails = array_merge(['feed_id' => $createdFeed->id], $entry);
-                        // Insert the entry details
-                        Entry::create($entryDetails);
-                    }
-                
-                } else {
-                    return $this->backWithError("We're not able to find an RSS feed for this site");
-                }
-
-                // Redirect them to the newly created feed page
-                return redirect(route('feeds.show', $createdFeed->id));
-
-            } else {
-                return $this->backWithError("We're not able to find an RSS feed for this site");
+            // Check if this site already exists in the db 
+            $feedAlreadyExists = Feed::where('site_url', $feed->getSiteURL())->first();
+            if ($feedAlreadyExists) {
+                return $this->backWithError('This feed already exists');
             }
+
+            $feedDetails = $feed->feedDetails();
+
+            // Insert the feed details
+            $createdFeed = Feed::create($feedDetails);
+
+            $allEntries = $feed->entryDetails();
+            foreach ($allEntries as $entry) {
+                // Add the feed_id to the beginning of each array
+                $entryDetails = array_merge(['feed_id' => $createdFeed->id], $entry);
+                // Insert the entry details
+                Entry::create($entryDetails);
+            }
+
+            // Redirect them to the newly created feed page
+            return redirect(route('feeds.show', $createdFeed->id));
+
         } else {
-            return $this->backWithError('This feed already exists');
+            return $this->backWithError("We're not able to find an RSS feed for this site");
         }
     }
 
