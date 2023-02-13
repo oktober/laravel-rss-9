@@ -24,7 +24,7 @@ class FeedsController extends Controller
     {
         // Validate the input fields
     	request()->validate([
-    		'site_url' => 'required|active_url',
+    		'site_url' => 'required|active_url|max:255',
     	]);
 
         $feed = new FeedService;
@@ -73,7 +73,7 @@ class FeedsController extends Controller
     public function update(Feed $feed)
     {
         request()->validate([
-    		'site_title' => 'required',
+    		'site_title' => 'required|string|max:255',
     	]);
 
     	$feed->update([
