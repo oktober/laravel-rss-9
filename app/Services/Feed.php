@@ -7,13 +7,10 @@ use SimplePie\SimplePie;
 
 class Feed 
 {
-    protected string $siteURL;
     protected SimplePie $feed;
 
     public function find(string $siteURL): bool
     {
-        $this->siteURL = $siteURL;
-
         // SimplePie library adds functionality and sanitization for handling feeds
         $this->feed = new SimplePie();
         // Disable caching for now
@@ -23,11 +20,16 @@ class Feed
         return $this->feed->init();
     }
 
+    public function getSiteURL(): string
+    {
+        return $this->feed->get_link();
+    }
+
     public function feedDetails(): array
     {
         return [
             'feed_url' => $this->feed->subscribe_url(),
-            'site_url' => $this->siteURL,
+            'site_url' => $this->feed->get_link(),
             'site_title' => $this->feed->get_title()
         ];
     }
