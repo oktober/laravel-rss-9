@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('entry_url')->unique();
             $table->string('entry_title');
             $table->text('entry_teaser');
-            $table->text('entry_content');
+            $table->mediumText('entry_content');
             $table->timestamp('entry_last_updated');
             $table->timestamps();
         });
