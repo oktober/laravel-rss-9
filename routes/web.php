@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeedsController;
 use App\Http\Controllers\EntriesController;
 use Illuminate\Support\Facades\Route;
@@ -18,7 +18,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 //Shows home page
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', function() {
+    return view('welcome');
+});
 
 // Create a group for all the Feeds controllers
 Route::controller(FeedsController::class)->group(function () {
@@ -36,9 +38,7 @@ Route::controller(FeedsController::class)->group(function () {
 //Route::get('/entries', [EntriesController::class, 'index']);
 Route::get('/entry/{entry}', [EntriesController::class, 'show']);
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
