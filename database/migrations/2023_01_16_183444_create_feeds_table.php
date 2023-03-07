@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('feeds', function (Blueprint $table) {
             $table->id();
-            $table->string('feed_url')->unique();
-            $table->string('site_url')->unique();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('feed_url');
+            $table->string('site_url');
             $table->string('site_title');
             $table->timestamps();
         });

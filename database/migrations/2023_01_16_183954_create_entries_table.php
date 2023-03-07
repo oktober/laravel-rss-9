@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('entries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('feed_id')->constrained()->cascadeOnDelete();
-            $table->string('entry_url')->unique();
+            $table->string('entry_url');
             $table->string('entry_title');
             $table->text('entry_teaser');
             $table->mediumText('entry_content');
