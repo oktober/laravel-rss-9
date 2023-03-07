@@ -79,6 +79,39 @@ class EndpointsTest extends TestCase
         $response->assertViewIs('entries.show');
     }
 
+    public function test_that_feed_created_by_one_user_cannot_be_seen_by_a_different_user()
+    {
+        // create an authenticated user
+        $user1 = User::factory()->create();
+
+        // create one feed for this user with 1 entry
+        $feed1 = Feed::factory()->create([
+            'user_id' => $user1->id
+        ]);
+        Entry::factory()->create([
+            'feed_id' => $feed1->id
+        ]);
+
+        // create another authenticated user
+        $user2 = User::factory()->create();
+
+        // create one feed for this user with 1 entry
+        $feed2 = Feed::factory()->create([
+            'user_id' => $user2->id
+        ]);
+        Entry::factory()->create([
+            'feed_id' => $feed2->id
+        ]);
+        
+        // check that $user1 can't see $user2's feed
+        $response = $this->actingAs($user1)->get('/feeds/' . $feed2->id);
+        $response->assertForbidden();
+        
+        // check that $user2 can't see $user1's feed
+        $response = $this->actingAs($user2)->get('/feeds/' . $feed1->id);
+        $response->assertForbidden();
+    }
+
     public function test_that_unassigned_route_shows_404()
     {
         // unassigned routes are showing 404

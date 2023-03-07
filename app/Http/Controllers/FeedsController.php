@@ -77,7 +77,11 @@ class FeedsController extends Controller
 
     public function show(Feed $feed)
     {
-    	return view('feeds.show', ['feed' => $feed]);
+        if ($feed->user_id !== auth()->id()){
+            abort(403);
+        }
+
+        return view('feeds.show', ['feed' => $feed]);
     }
 
     public function edit(Feed $feed)
