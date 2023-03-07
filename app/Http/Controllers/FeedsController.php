@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 
 class FeedsController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         // show all feeds that belong to this user that have entries
         $feeds = Feed::whereBelongsTo(request()->user())->with('entries')->get();
@@ -29,17 +29,21 @@ class FeedsController extends Controller
     public function store(Request $request)
     {
         // Validate the input fields
-    	request()->validate([
+    	$request->validate([
     		'site_url' => [
                 'required', 
                 'active_url', 
                 'max:255', 
-                Rule::unique(Feed::class)
-                    ->where(fn ($query) => $query->where('user_id', $request->user()->id))],
+                // need to figure out how to run this rule after we grab the site_url from the db
+                    // otherwise, we can't guarantee it's the right formatting
+                    // but we need to do some validation first before we run FeedService::find
+                // Rule::unique(Feed::class)
+                //     ->where(fn ($query) => $query->where('user_id', request()->user()->id))
+            ],
     	]);
 
         $feed = new FeedService;
-        $feedFound = $feed->find(request('site_url'));
+        $feedFound = $feed->find($request->input('site_url'));
 
         // If we were able to find a feed for this site
         if ($feedFound) {
@@ -67,7 +71,7 @@ class FeedsController extends Controller
             return redirect(route('feeds.show', $createdFeed->id));
 
         } else {
-            return $this->backWithError("We're not able to find an RSS feed for this site");
+            return $this->backWithError("We're not able to find an RSS feed for this site.");
         }
     }
 
