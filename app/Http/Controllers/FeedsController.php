@@ -4,27 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\Feed;
 use App\Models\Entry;
+use App\Models\User;
 use App\Services\Feed as FeedService;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class FeedsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-    	$feeds = Feed::get();
+        // show all feeds that belong to this user that have entries
+        $feeds = Feed::whereBelongsTo(request()->user())->with('entries')->get();
     	
     	return view('feeds.index', ['feeds' => $feeds]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-    	return view('feeds.create');
+        return view('feeds.create', [
+            'user' => $request->user(),
+        ]);
     }
 
-    public function store()
+    public function store(Request $request)
     {
         // Validate the input fields
     	request()->validate([
-    		'site_url' => 'required|active_url|max:255',
+    		'site_url' => [
+                'required', 
+                'active_url', 
+                'max:255', 
+                Rule::unique(Feed::class)
+                    ->where(fn ($query) => $query->where('user_id', $request->user()->id))],
     	]);
 
         $feed = new FeedService;
@@ -34,13 +45,13 @@ class FeedsController extends Controller
         if ($feedFound) {
 
             // Check if this site already exists in the db 
-            $feedAlreadyExists = Feed::where('site_url', $feed->getSiteURL())->first();
+            $feedAlreadyExists = $request->user()->feeds->where('site_url', $feed->getSiteURL())->first();
             if ($feedAlreadyExists) {
                 return $this->backWithError('This feed already exists');
             }
 
-            $feedDetails = $feed->feedDetails();
-
+            // add the user_id to the beginning of the feedDetails array
+            $feedDetails = array_merge(['user_id' => $request->user()->id], $feed->feedDetails());
             // Insert the feed details
             $createdFeed = Feed::create($feedDetails);
 
