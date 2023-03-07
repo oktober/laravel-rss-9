@@ -88,7 +88,7 @@ class EndpointsTest extends TestCase
         $feed1 = Feed::factory()->create([
             'user_id' => $user1->id
         ]);
-        Entry::factory()->create([
+        $entry1 = Entry::factory()->create([
             'feed_id' => $feed1->id
         ]);
 
@@ -99,16 +99,22 @@ class EndpointsTest extends TestCase
         $feed2 = Feed::factory()->create([
             'user_id' => $user2->id
         ]);
-        Entry::factory()->create([
+        $entry2 = Entry::factory()->create([
             'feed_id' => $feed2->id
         ]);
         
         // check that $user1 can't see $user2's feed
         $response = $this->actingAs($user1)->get('/feeds/' . $feed2->id);
         $response->assertForbidden();
+        // check that $user1 can't see $user2's feed's entry
+        $response = $this->actingAs($user1)->get('/entry/' . $entry2->id);
+        $response->assertForbidden();
         
         // check that $user2 can't see $user1's feed
         $response = $this->actingAs($user2)->get('/feeds/' . $feed1->id);
+        $response->assertForbidden();
+        // check that $user2 can't see $user1's feed's entry
+        $response = $this->actingAs($user2)->get('/entry/' . $entry1->id);
         $response->assertForbidden();
     }
 

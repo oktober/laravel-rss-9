@@ -15,7 +15,12 @@ class EntriesController extends Controller
     	return view('entries.index', ['entries' => $entries]);
     }*/
 
-    public function show(Entry $entry){
+    public function show(Entry $entry)
+    {
+        if ($entry->feed->user_id !== auth()->id()){
+            abort(403);
+        }
+
     	return view('entries.show', ['entry' => $entry]);
     }
 }
