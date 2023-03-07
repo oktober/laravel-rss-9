@@ -24,10 +24,10 @@ class FeedsController extends Controller
         return view('feeds.create');
     }
 
-    public function store(Request $request)
+    public function store()
     {
         // Validate the input fields
-    	$request->validate([
+    	request()->validate([
     		'site_url' => [
                 'required', 
                 'active_url', 
@@ -41,7 +41,7 @@ class FeedsController extends Controller
     	]);
 
         $feed = new FeedService;
-        $feedFound = $feed->find($request->input('site_url'));
+        $feedFound = $feed->find(request('site_url'));
 
         // If we were able to find a feed for this site
         if ($feedFound) {
