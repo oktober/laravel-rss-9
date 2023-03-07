@@ -33,10 +33,10 @@
                         </section>
 
                         @empty
-                        <div class="mb-6 border">
-                            <h2>No feeds available</h2>
-                            <p>
-                                <a href="{{ route('feeds.create') }}">Enter a new feed</a>
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-lg">No feeds available</h3>
+                            <p class="mt-4">
+                                <a href="{{ route('feeds.create') }}" class="hover:underline hover:decoration-gray-400">Enter a new feed</a>
                             </p>
                         </div>
 
