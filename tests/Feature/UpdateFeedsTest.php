@@ -52,6 +52,21 @@ class UpdateFeedsTest extends TestCase
         $this->assertEquals($original_title, $feed->site_title);
 
     }
+    
+    public function test_one_user_cannot_update_another_users_feed()
+    {
+        // create a second user
+        $user2 = User::factory()->create();
+
+        // update the site title 
+        $response = $this->actingAs($user2)->put('/feeds/' . $this->feedId, ['site_title' => 'New Title']);
+        $response->assertForbidden();
+
+        // check that it was not updated in the DB 
+        $feed = Feed::find($this->feedId);
+        $this->assertFalse('New Title' === $feed->site_title);
+
+    }
 
     // test that a feed gets deleted and is no longer in the db 
     public function test_feed_gets_deleted() 
@@ -60,6 +75,19 @@ class UpdateFeedsTest extends TestCase
         $this->delete('/feeds/' . $this->feedId)->assertRedirect('/')->assertSessionHas('success', 'Feed has been successfully deleted');
         // validate it doesn't exist in database 
         $this->assertDatabaseMissing('feeds', ['site_url' => $this->url]);
+    }
+    
+    public function test_one_user_cannot_delete_another_users_feed()
+    {
+        // create a second user
+        $user2 = User::factory()->create();
+
+        // try to delete $user's feed as $user2
+        $response = $this->actingAs($user2)->delete('/feeds/' . $this->feedId);
+        $response->assertForbidden();
+
+       // validate $user's feed still exists in database 
+       $this->assertDatabaseHas('feeds', ['site_url' => $this->url, 'user_id' => $this->user->id]);
     }
 
 }

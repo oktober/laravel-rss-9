@@ -107,14 +107,20 @@ class EndpointsTest extends TestCase
         $response = $this->actingAs($user1)->get('/feeds/' . $feed2->id);
         $response->assertForbidden();
         // check that $user1 can't see $user2's feed's entry
-        $response = $this->actingAs($user1)->get('/entry/' . $entry2->id);
+        $response = $this->get('/entry/' . $entry2->id);
+        $response->assertForbidden();
+        // check that $user1 can't edit $user2's feed
+        $response = $this->get('/feeds/' . $feed2->id . '/edit');
         $response->assertForbidden();
         
         // check that $user2 can't see $user1's feed
         $response = $this->actingAs($user2)->get('/feeds/' . $feed1->id);
         $response->assertForbidden();
         // check that $user2 can't see $user1's feed's entry
-        $response = $this->actingAs($user2)->get('/entry/' . $entry1->id);
+        $response = $this->get('/entry/' . $entry1->id);
+        $response->assertForbidden();
+        // check that $user2 can't edit $user1's feed
+        $response = $this->get('/feeds/' . $feed1->id . '/edit');
         $response->assertForbidden();
     }
 

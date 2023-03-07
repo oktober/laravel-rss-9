@@ -14,16 +14,14 @@ class FeedsController extends Controller
     public function index()
     {
         // show all feeds that belong to this user that have entries
-        $feeds = Feed::whereBelongsTo(request()->user())->with('entries')->get();
+        $feeds = Feed::whereBelongsTo(auth()->user())->with('entries')->get();
     	
     	return view('feeds.index', ['feeds' => $feeds]);
     }
 
-    public function create(Request $request)
+    public function create()
     {
-        return view('feeds.create', [
-            'user' => $request->user(),
-        ]);
+        return view('feeds.create');
     }
 
     public function store(Request $request)
@@ -49,13 +47,13 @@ class FeedsController extends Controller
         if ($feedFound) {
 
             // Check if this site already exists in the db 
-            $feedAlreadyExists = $request->user()->feeds->where('site_url', $feed->getSiteURL())->first();
+            $feedAlreadyExists = auth()->user()->feeds->where('site_url', $feed->getSiteURL())->first();
             if ($feedAlreadyExists) {
                 return $this->backWithError('This feed already exists');
             }
 
             // add the user_id to the beginning of the feedDetails array
-            $feedDetails = array_merge(['user_id' => $request->user()->id], $feed->feedDetails());
+            $feedDetails = array_merge(['user_id' => auth()->id()], $feed->feedDetails());
             // Insert the feed details
             $createdFeed = Feed::create($feedDetails);
 
@@ -86,11 +84,19 @@ class FeedsController extends Controller
 
     public function edit(Feed $feed)
     {
+        if ($feed->user_id !== auth()->id()){
+            abort(403);
+        }
+        
     	return view('feeds.edit', ['feed' => $feed]);
     }
 
     public function update(Feed $feed)
     {
+        if ($feed->user_id !== auth()->id()){
+            abort(403);
+        }
+        
         request()->validate([
     		'site_title' => 'required|string|max:255',
     	]);
@@ -105,6 +111,10 @@ class FeedsController extends Controller
 
     public function destroy(Feed $feed)
     {
+        if ($feed->user_id !== auth()->id()){
+            abort(403);
+        }
+
     	$feed->delete();
     	
     	return redirect('/')->with('success', 'Feed has been successfully deleted');
