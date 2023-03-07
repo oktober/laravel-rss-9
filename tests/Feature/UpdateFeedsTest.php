@@ -31,7 +31,7 @@ class UpdateFeedsTest extends TestCase
     public function test_a_feed_title_gets_renamed()
     {
         // update the site title 
-        $this->actingAs($this->user)->put('/feeds/' . $this->feedId, ['site_title' => 'New Title']);
+        $this->put('/feeds/' . $this->feedId, ['site_title' => 'New Title']);
 
         // check that it was updated in the DB 
         $feed = Feed::find($this->feedId);
@@ -45,7 +45,7 @@ class UpdateFeedsTest extends TestCase
         $original_title = Feed::find($this->feedId)->value('site_title');
         
         // try update the site title to an empty string
-        $this->actingAs($this->user)->put('/feeds/' . $this->feedId, ['site_title' => '']);
+        $this->put('/feeds/' . $this->feedId, ['site_title' => '']);
 
         // check that it was not updated in the DB 
         $feed = Feed::find($this->feedId);
