@@ -33,7 +33,7 @@
 					</div>
 					@endforeach
 				@else
-					<div class="mb-6">
+					<div class="pt-6 mb-6">
 						<h3 class="font-semibold text-lg">No feeds available</h3>
 						<p class="mt-4">
 							<a href="{{ route('feeds.create') }}" class="hover:underline hover:decoration-gray-400">Enter a new feed</a>
