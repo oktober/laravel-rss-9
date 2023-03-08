@@ -10,6 +10,8 @@ This is a very basic RSS reader app I've created using Laravel.
 -   view the latest 3 posts for that feed on the homepage
 -   view all posts for a feed on the feed page
 
+---
+
 ### Future functionality
 
 -   Fetching any new posts for all your feeds when you log in
