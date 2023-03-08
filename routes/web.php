@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/feeds/', [FeedsController::class, 'index']);
+    Route::get('/feeds/', [FeedsController::class, 'index'])->name('feeds');
     Route::get('/feeds/create', [FeedsController::class, 'create'])->name('feeds.create');
     Route::post('/feeds', [FeedsController::class, 'store']);
     Route::get('/feeds/{feed}', [FeedsController::class, 'show'])->name('feeds.show');
