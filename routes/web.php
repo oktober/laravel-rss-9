@@ -40,7 +40,7 @@ Route::middleware('auth')->group(function () {
     //Shows all entries 
     // TODO: sort by date and add pagination to only show the X most recent
     //Route::get('/entries', [EntriesController::class, 'index']);
-    Route::get('/entry/{entry}', [EntriesController::class, 'show']);
+    Route::get('/entry/{entry}', [EntriesController::class, 'show'])->name('entries.show');
 });
 
 require __DIR__.'/auth.php';
