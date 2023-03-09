@@ -21,7 +21,7 @@
                         <h3 class="font-semibold text-lg">{{ $entry->entry_title }}</h3>
 
                         <p class="text-sm my-2 hover:underline hover:decoration-gray-400">
-                            <a href="{{ $entry->entry_url }}" target="_blank">
+                            <a href="{{ $entry->entry_url }}" target="_blank" rel="noopener">
                                 {{ $entry->entry_url }}
                                 <img 
                                     class="inline" 

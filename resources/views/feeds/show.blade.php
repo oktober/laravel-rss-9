@@ -4,7 +4,7 @@
         {{ $feed->site_title }}
         </h2>
         <p class="mt-2 hover:underline hover:decoration-gray-400">
-            <a href="{{ $feed->site_url }}" target="_blank">
+            <a href="{{ $feed->site_url }}" target="_blank" rel="noopener">
                 {{ $feed->site_url}}
                 <img 
                     class="inline" 
