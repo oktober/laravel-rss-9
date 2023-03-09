@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                    <form method="POST" action="/feeds">
+                    <form method="POST" action="{{ route('feeds.store') }}">
                         @csrf
 
                         <div>
@@ -26,10 +26,10 @@
                                 >
                             </div>
                             @error('site_url')
-                                <p class="help is-danger">{{ $errors->first('site_url') }}</p>
+                                <p class="">{{ $errors->first('site_url') }}</p>
                             @enderror
                             @if (session('error'))
-                                <p class="help is-danger">{{ session('error') }}</p>
+                                <p class="">{{ session('error') }}</p>
                             @endif
                         </div>
 
