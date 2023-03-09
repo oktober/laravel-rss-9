@@ -9,6 +9,12 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
+                    <!-- For displaying messages like 'Feed successfully deleted' -->
+                    @if (session()->get('success'))
+                        <div class="mb-6">
+                        <h3 class="font-semibold text-lg text-gray-500">{{ session()->get('success') }}</h3>
+                        </div>
+                    @endif
 
                     @forelse ($feeds as $feed)
                         <div class="mb-4 border-b-2 border-gray-100 pb-2">

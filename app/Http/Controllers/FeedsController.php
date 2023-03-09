@@ -117,7 +117,7 @@ class FeedsController extends Controller
 
     	$feed->delete();
     	
-    	return redirect('/')->with('success', 'Feed has been successfully deleted');
+    	return redirect('/dashboard')->with('success', 'Feed has been successfully deleted');
     }
 
     protected function backWithError(string $error)
