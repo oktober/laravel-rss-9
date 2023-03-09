@@ -21,7 +21,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="mb-4">
-                        <p><a 
+                        <p class="text-sm"><a 
                             href="{{ route('feeds.edit', $feed) }}" 
                             class="underline decoration-gray-400 hover:underline hover:decoration-indigo-700 hover:text-indigo-700 focus:underline focus:decoration-indigo-700 focus:text-indigo-700"
                             >
