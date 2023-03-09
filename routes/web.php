@@ -31,11 +31,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/feeds/', [FeedsController::class, 'index'])->name('feeds');
     Route::get('/feeds/create', [FeedsController::class, 'create'])->name('feeds.create');
-    Route::post('/feeds', [FeedsController::class, 'store']);
+    Route::post('/feeds', [FeedsController::class, 'store'])->name('feeds.store');
     Route::get('/feeds/{feed}', [FeedsController::class, 'show'])->name('feeds.show');
     Route::get('/feeds/{feed}/edit', [FeedsController::class, 'edit'])->name('feeds.edit');
-    Route::put('/feeds/{feed}', [FeedsController::class, 'update']);
-    Route::delete('/feeds/{feed}', [FeedsController::class, 'destroy']);
+    Route::put('/feeds/{feed}', [FeedsController::class, 'update'])->name('feeds.update');
+    Route::delete('/feeds/{feed}', [FeedsController::class, 'destroy'])->name('feeds.destroy');
 
     //Shows all entries 
     // TODO: sort by date and add pagination to only show the X most recent
