@@ -72,7 +72,7 @@ class UpdateFeedsTest extends TestCase
     public function test_feed_gets_deleted() 
     {
         // delete the feed
-        $this->delete('/feeds/' . $this->feedId)->assertRedirect('/')->assertSessionHas('success', 'Feed has been successfully deleted');
+        $this->delete('/feeds/' . $this->feedId)->assertRedirect('/dashboard')->assertSessionHas('success', 'Feed has been successfully deleted');
         // validate it doesn't exist in database 
         $this->assertDatabaseMissing('feeds', ['site_url' => $this->url]);
     }

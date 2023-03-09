@@ -33,7 +33,7 @@ class EndpointsTest extends TestCase
 
         $response = $this->actingAs($user)->get('/feeds');
         $response->assertOk();
-        $response->assertSee('No feeds found');
+        $response->assertSee('No feeds available');
         $response->assertViewIs('feeds.index');
     }
 
